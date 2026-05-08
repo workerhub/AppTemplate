@@ -41,16 +41,11 @@ pnpm install
 - 设置你的 `account_id`
 - 创建 D1 数据库并设置 `database_id`
 - 创建 KV 命名空间并设置其 `id`
+- 设置 `JWT_SECRET`（随机 32 位以上字符串）
+- 设置 `SETUP_SECRET`（用于数据库初始化的随机字符串）
+- 设置 `TABLE_PREFIX`（可选，表名前缀，如 `myapp_`，留空则不加前缀）
 
-### 4. 设置密钥
-
-```bash
-cd worker
-wrangler secret put JWT_SECRET       # 随机 32 位以上字符串
-wrangler secret put SETUP_SECRET     # 用于数据库初始化的随机字符串
-```
-
-### 5. 初始化数据库
+### 4. 初始化数据库
 
 ```bash
 # 先部署，然后调用 setup 接口：
@@ -58,7 +53,7 @@ curl -X POST https://your-worker.workers.dev/api/setup \
   -H "X-Setup-Secret: your-setup-secret"
 ```
 
-### 6. 启动开发
+### 5. 启动开发
 
 ```bash
 pnpm dev
@@ -91,9 +86,11 @@ pnpm dev
 
 | 变量 | 说明 |
 |------|------|
-| `JWT_SECRET` | JWT 签名密钥（通过 wrangler secret 设置） |
+| `JWT_SECRET` | JWT 签名密钥（随机 32 位以上字符串） |
 | `SETUP_SECRET` | 调用 setup 接口的密钥 |
 | `TABLE_PREFIX` | 可选，所有数据库表名的前缀（如 `myapp_`） |
+
+> 本地开发时直接在 `worker/wrangler.toml` 的 `[vars]` 中配置；CI/CD 部署时通过 GitHub Secrets/Variables 注入，无需在 Cloudflare 控制台额外配置。
 
 ## 部署
 
@@ -117,10 +114,15 @@ pnpm deploy
 |------|------|------|
 | Secret | `CLOUDFLARE_API_TOKEN` | Cloudflare API 令牌 |
 | Secret | `PAT_TOKEN` | 用于创建标签的 Personal Access Token |
+| Secret | `JWT_SECRET` | JWT 签名密钥 |
+| Secret | `SETUP_SECRET` | 数据库初始化密钥 |
 | Variable | `CLOUDFLARE_ACCOUNT_ID` | Cloudflare 账户 ID |
 | Variable | `D1_DATABASE_NAME` | D1 数据库名称 |
 | Variable | `D1_DATABASE_ID` | D1 数据库 ID |
 | Variable | `KV_NAMESPACE_ID` | KV 命名空间 ID |
+| Variable | `TABLE_PREFIX` | 可选，数据库表名前缀 |
+
+> 所有配置均在 GitHub 仓库中完成，部署时自动通过 sed 注入 `wrangler.toml`，无需在 Cloudflare 控制台手动配置变量。
 
 ## 项目结构
 

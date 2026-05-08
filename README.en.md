@@ -41,16 +41,11 @@ Edit `worker/wrangler.toml`:
 - Set your `account_id`
 - Create a D1 database and set `database_id`
 - Create a KV namespace and set its `id`
+- Set `JWT_SECRET` (random 32+ char string)
+- Set `SETUP_SECRET` (random string for DB init)
+- Set `TABLE_PREFIX` (optional, e.g. `myapp_`, leave empty for no prefix)
 
-### 4. Set secrets
-
-```bash
-cd worker
-wrangler secret put JWT_SECRET       # random 32+ char string
-wrangler secret put SETUP_SECRET     # random string for DB init
-```
-
-### 5. Initialize the database
+### 4. Initialize the database
 
 ```bash
 # Deploy first, then call setup:
@@ -58,7 +53,7 @@ curl -X POST https://your-worker.workers.dev/api/setup \
   -H "X-Setup-Secret: your-setup-secret"
 ```
 
-### 6. Start development
+### 5. Start development
 
 ```bash
 pnpm dev
@@ -91,6 +86,73 @@ pnpm dev
 
 | Variable | Description |
 |----------|-------------|
-| `JWT_SECRET` | Secret for signing JWTs (set via wrangler secret) |
+| `JWT_SECRET` | Secret for signing JWTs (random 32+ char string) |
 | `SETUP_SECRET` | Secret for calling the setup endpoint |
 | `TABLE_PREFIX` | Optional prefix for all DB table names (e.g. `myapp_`) |
+
+> For local development, configure these in `worker/wrangler.toml` `[vars]` section. For CI/CD deployment, they are injected via GitHub Secrets/Variables — no need to configure them in the Cloudflare console.
+
+## Deployment
+
+### Manual deploy
+
+```bash
+pnpm deploy
+```
+
+### CI/CD auto deployment
+
+The project includes GitHub Actions workflows:
+
+- **Deploy** — Auto-deploy to Cloudflare Workers on push to `main`
+- **Release** — Auto-create GitHub Release on `v*` tag push
+- **Tag** — Manually trigger a semantic version tag (e.g. `v1.0.0`)
+
+Configure the following Secrets and Variables in your GitHub repository:
+
+| Type | Name | Description |
+|------|------|-------------|
+| Secret | `CLOUDFLARE_API_TOKEN` | Cloudflare API token |
+| Secret | `PAT_TOKEN` | Personal Access Token for creating tags |
+| Secret | `JWT_SECRET` | JWT signing secret |
+| Secret | `SETUP_SECRET` | Database initialization secret |
+| Variable | `CLOUDFLARE_ACCOUNT_ID` | Cloudflare account ID |
+| Variable | `D1_DATABASE_NAME` | D1 database name |
+| Variable | `D1_DATABASE_ID` | D1 database ID |
+| Variable | `KV_NAMESPACE_ID` | KV namespace ID |
+| Variable | `TABLE_PREFIX` | Optional, database table name prefix |
+
+> All configuration is managed in the GitHub repository settings and automatically injected into `wrangler.toml` via sed during deployment — no manual configuration needed in the Cloudflare console.
+
+## Project Structure
+
+```
+├── web/                    # Frontend project
+│   ├── src/
+│   │   ├── components/     # Shared components (ThemeProvider, UI components)
+│   │   ├── hooks/          # Custom hooks (useAuth)
+│   │   ├── layouts/        # Layout components
+│   │   ├── locales/        # i18n resources (zh.json, en.json)
+│   │   ├── pages/          # Pages
+│   │   │   ├── admin/      # Admin panel pages
+│   │   │   ├── auth/       # Auth pages (login, register, 2FA, etc.)
+│   │   │   ├── home/       # Home page
+│   │   │   ├── settings/   # User settings page
+│   │   │   └── about/      # About page
+│   │   ├── lib/            # Utilities (API, i18n, utils)
+│   │   └── types/          # Type definitions
+│   └── package.json
+├── worker/                 # Backend project
+│   ├── src/
+│   │   ├── routes/         # API routes (auth, admin, me, setup)
+│   │   ├── core/           # Core logic (auth, time)
+│   │   ├── middleware/      # Middleware (auth, admin, rate limit)
+│   │   ├── db/
+│   │   │   ├── queries/    # Database query functions
+│   │   │   └── schema.sql  # Database schema
+│   │   └── services/       # Services (email, 2FA)
+│   ├── wrangler.toml       # Cloudflare Workers config
+│   └── package.json
+├── .github/workflows/      # GitHub Actions workflows
+└── package.json            # Root monorepo config
+```
