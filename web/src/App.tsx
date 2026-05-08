@@ -1,0 +1,77 @@
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router'
+import { ThemeProvider } from '@/components/ThemeProvider'
+import { AuthProvider, useAuth } from '@/hooks/useAuth'
+import { AppLayout } from '@/layouts/AppLayout'
+import { LoginPage } from '@/pages/auth/LoginPage'
+import { RegisterPage } from '@/pages/auth/RegisterPage'
+import { TwoFactorPage } from '@/pages/auth/TwoFactorPage'
+import { VerifyEmailPage } from '@/pages/auth/VerifyEmailPage'
+import { ForgotPasswordPage } from '@/pages/auth/ForgotPasswordPage'
+import { HomePage } from '@/pages/home/HomePage'
+import { SettingsPage } from '@/pages/settings/SettingsPage'
+import { AdminPage } from '@/pages/admin/AdminPage'
+import { AdminUsersPage } from '@/pages/admin/AdminUsersPage'
+import { AdminAppPage } from '@/pages/admin/AdminAppPage'
+import { AdminEmailPage } from '@/pages/admin/AdminEmailPage'
+import { AdminSecurityPage } from '@/pages/admin/AdminSecurityPage'
+import { AboutPage } from '@/pages/about/AboutPage'
+import type { ReactNode } from 'react'
+
+function ProtectedRoute({ children }: { children: ReactNode }) {
+  const { user, loading } = useAuth()
+  if (loading) return <div className="flex items-center justify-center h-screen">Loading...</div>
+  if (!user) return <Navigate to="/login" replace />
+  return <>{children}</>
+}
+
+function AdminRoute({ children }: { children: ReactNode }) {
+  const { user, loading } = useAuth()
+  if (loading) return <div className="flex items-center justify-center h-screen">Loading...</div>
+  if (!user) return <Navigate to="/login" replace />
+  if (user.role !== 'admin') return <Navigate to="/" replace />
+  return <>{children}</>
+}
+
+function PublicRoute({ children }: { children: ReactNode }) {
+  const { user, loading } = useAuth()
+  if (loading) return <div className="flex items-center justify-center h-screen">Loading...</div>
+  if (user) return <Navigate to="/" replace />
+  return <>{children}</>
+}
+
+export function App() {
+  return (
+    <ThemeProvider>
+      <BrowserRouter>
+        <AuthProvider>
+          <Routes>
+            {/* Public routes */}
+            <Route path="/login" element={<PublicRoute><LoginPage /></PublicRoute>} />
+            <Route path="/register" element={<PublicRoute><RegisterPage /></PublicRoute>} />
+            <Route path="/2fa" element={<TwoFactorPage />} />
+            <Route path="/verify-email" element={<VerifyEmailPage />} />
+            <Route path="/forgot-password" element={<PublicRoute><ForgotPasswordPage /></PublicRoute>} />
+
+            {/* Protected routes */}
+            <Route element={<ProtectedRoute><AppLayout /></ProtectedRoute>}>
+              <Route index element={<HomePage />} />
+              <Route path="settings" element={<SettingsPage />} />
+              <Route path="about" element={<AboutPage />} />
+
+              {/* Admin routes */}
+              <Route path="admin" element={<AdminRoute><AdminPage /></AdminRoute>}>
+                <Route index element={<Navigate to="users" replace />} />
+                <Route path="users" element={<AdminUsersPage />} />
+                <Route path="app" element={<AdminAppPage />} />
+                <Route path="email" element={<AdminEmailPage />} />
+                <Route path="security" element={<AdminSecurityPage />} />
+              </Route>
+            </Route>
+
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </AuthProvider>
+      </BrowserRouter>
+    </ThemeProvider>
+  )
+}
