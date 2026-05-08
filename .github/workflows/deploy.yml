@@ -47,4 +47,20 @@ jobs:
         working-directory: worker
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-        run: pnpm exec wrangler deploy
+        run: |
+          pnpm exec wrangler deploy 2>&1 | tee deploy.log
+          DEPLOY_URL=$(grep -oP 'https://[^\s]+\.workers\.dev' deploy.log | head -1)
+          echo "DEPLOY_URL=$DEPLOY_URL" >> $GITHUB_ENV
+
+      - name: Initialize database
+        if: env.DEPLOY_URL != ''
+        env:
+          SETUP_SECRET: ${{ secrets.SETUP_SECRET }}
+        run: |
+          echo "Calling setup: ${DEPLOY_URL}/api/setup/***"
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" "${DEPLOY_URL}/api/setup/${SETUP_SECRET}")
+          if [ "$STATUS" = "200" ]; then
+            echo "Database initialized successfully"
+          else
+            echo "Setup returned HTTP $STATUS (may already be initialized)"
+          fi
