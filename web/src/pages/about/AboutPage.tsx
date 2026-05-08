@@ -52,7 +52,14 @@ export function AboutPage() {
         </div>
         <div className="flex items-center justify-between border-t pt-3">
           <span className="text-sm text-muted-foreground">{t('about.license')}</span>
-          <span className="text-sm font-medium">MIT</span>
+          <a
+            href="https://github.com/workerhub/AppTemplate/LICENSE"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-sm font-medium text-primary hover:underline"
+          >
+            MIT
+          </a>
         </div>
       </div>
     </div>
