@@ -308,7 +308,7 @@ async function issueTokens(c: Context<HonoEnv>, userId: string, role: string, ne
   const refreshPayload: JWTPayload = {
     sub: userId,
     role,
-    jti: <USER_NAME>,
+    jti: refreshJti,
     iat: now,
     exp: now + 604800, // 7d
   }
@@ -316,7 +316,7 @@ async function issueTokens(c: Context<HonoEnv>, userId: string, role: string, ne
   const accessToken = await signJWT(accessPayload, c.env.JWT_SECRET)
   const refreshTokenStr = await signJWT(refreshPayload, c.env.JWT_SECRET)
 
-  await c.env.KV.put(`rt:${<USER_NAME>}`, userId, { expirationTtl: 604800 })
+  await c.env.KV.put(`rt:${refreshJti}`, userId, { expirationTtl: 604800 })
 
   // Track session in KV index
   const ip = c.req.header('cf-connecting-ip') || c.req.header('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown'
