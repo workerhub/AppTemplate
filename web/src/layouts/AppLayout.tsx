@@ -149,7 +149,7 @@ export function AppLayout() {
   const { theme, setTheme } = useTheme()
   const navigate = useNavigate()
   const [impersonating, setImpersonating] = useState(() => !!sessionStorage.getItem('impersonate_user_id'))
-  const [appName, setAppName] = useState('AppTemplate')
+  const [appName, setAppName] = useState(__APP_NAME__)
 
   useEffect(() => {
     api.get<{ app_name: string; version: string }>('/system/info')

@@ -27,7 +27,7 @@ export function AdminAppPage() {
   useEffect(() => {
     api
       .get<SystemSettings>('/admin/system/settings')
-      .then((s) => setAppName(s.app_name || 'eNotify'))
+      .then((s) => setAppName(s.app_name || '__APP_NAME__'))
       .catch((e) => setError(e.message))
       .finally(() => setLoading(false))
   }, [])
@@ -38,7 +38,7 @@ export function AdminAppPage() {
     setError('')
     setSaveMsg('')
     try {
-      await api.put('/admin/system/settings', { app_name: appName.trim() || 'eNotify' })
+      await api.put('/admin/system/settings', { app_name: appName.trim() || '__APP_NAME__' })
       setSaveMsg(t('common.success'))
       setTimeout(() => setSaveMsg(''), 3000)
     } catch (e: any) {
@@ -73,7 +73,7 @@ export function AdminAppPage() {
               className={INPUT}
               value={appName}
               onChange={(e) => setAppName(e.target.value)}
-              placeholder="eNotify"
+              placeholder="__APP_NAME__"
               maxLength={64}
             />
           </Field>

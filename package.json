@@ -2,6 +2,7 @@
   "name": "app-template",
   "version": "1.0.0",
   "private": true,
+  "displayName": "AppTemplate",
   "description": "A full-stack application template built on React 19 + Cloudflare Workers (Hono.js)",
   "license": "MIT",
   "repository": {

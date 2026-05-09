@@ -94,7 +94,7 @@ export function AdminSystemPage() {
     api
       .get<SystemSettings>('/admin/system/settings')
       .then((s) => {
-        setAppName(s.app_name || 'eNotify')
+        setAppName(s.app_name || '__APP_NAME__')
         setEmailProvider((s.email_provider as EmailProvider) || 'none')
         setEmailVerification(s.email_verification_enabled === 'true')
         setRequire2fa(s.require_2fa === 'true')
@@ -136,7 +136,7 @@ export function AdminSystemPage() {
     setSaveMsg('')
 
     const payload: Record<string, string> = {
-      app_name: appName.trim() || 'eNotify',
+      app_name: appName.trim() || '__APP_NAME__',
       email_provider: emailProvider,
       email_verification_enabled: String(emailVerification),
       require_2fa: String(require2fa),
@@ -217,7 +217,7 @@ export function AdminSystemPage() {
               className={INPUT}
               value={appName}
               onChange={(e) => setAppName(e.target.value)}
-              placeholder="eNotify"
+              placeholder="__APP_NAME__"
               maxLength={64}
             />
           </Field>
