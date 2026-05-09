@@ -115,24 +115,34 @@ pnpm deploy
 
 需要在 GitHub 仓库中配置以下 Secrets 和 Variables：
 
-| 类型 | 名称 | 说明 |
-|------|------|------|
-| Secret | `CLOUDFLARE_API_TOKEN` | Cloudflare API 令牌 |
-| Secret | `PAT_TOKEN` | 用于创建标签的 Personal Access Token |
-| Secret | `JWT_SECRET` | JWT 签名密钥 |
-| Secret | `SETUP_SECRET` | 数据库初始化密钥 |
-| Variable | `CLOUDFLARE_ACCOUNT_ID` | Cloudflare 账户 ID |
-| Variable | `D1_DATABASE_NAME` | D1 数据库名称 |
-| Variable | `D1_DATABASE_ID` | D1 数据库 ID |
-| Variable | `KV_NAMESPACE_ID` | KV 命名空间 ID |
-| Variable | `TABLE_PREFIX` | 可选，数据库表名前缀 |
+| 类型 | 名称 | 说明 | 必须 |
+|------|------|------|------|
+| Secret | `CLOUDFLARE_API_TOKEN` | Cloudflare API 令牌 | 是 |
+| Secret | `PAT_TOKEN` | 用于创建标签的 Personal Access Token | 否¹ |
+| Secret | `JWT_SECRET` | JWT 签名密钥 | 是 |
+| Secret | `SETUP_SECRET` | 数据库初始化密钥 | 是 |
+| Variable | `CLOUDFLARE_ACCOUNT_ID` | Cloudflare 账户 ID | 是 |
+| Variable | `D1_DATABASE_NAME` | D1 数据库名称 | 是 |
+| Variable | `D1_DATABASE_ID` | D1 数据库 ID | 是 |
+| Variable | `KV_NAMESPACE_ID` | KV 命名空间 ID | 是 |
+| Variable | `TABLE_PREFIX` | 数据库表名前缀 | 否² |
+
+¹ `PAT_TOKEN` 仅在使用 Tag 工作流（手动创建版本标签触发 Release）时需要，不使用该功能则无需配置。
+² `TABLE_PREFIX` 通过添加表名前缀可以实现多个项目共用同一个 D1 数据库，不同项目的表互不干扰（如 `app1_users`、`app2_users`）。留空则不加前缀。
 
 > 所有配置均在 GitHub 仓库中完成，部署时自动通过 sed 注入 `wrangler.toml`，无需在 Cloudflare 控制台手动配置变量。
 
 ## 项目结构
 
 ```
+├── .github/
+│   ├── workflows/          # GitHub Actions 工作流
+│   │   ├── deploy.yml      # 自动部署到 Cloudflare Workers
+│   │   ├── release.yml     # 自动创建 GitHub Release
+│   │   └── tag.yml         # 手动触发版本标签
+│   └── renovate.json       # Renovate 自动依赖更新配置
 ├── web/                    # 前端项目
+│   ├── public/             # 静态资源 (logo.svg, favicon.svg 等)
 │   ├── src/
 │   │   ├── components/     # 通用组件 (ThemeProvider, UI 组件)
 │   │   ├── hooks/          # 自定义 Hooks (useAuth)
@@ -146,6 +156,8 @@ pnpm deploy
 │   │   │   └── about/      # 关于页
 │   │   ├── lib/            # 工具函数 (API、i18n、utils)
 │   │   └── types/          # 类型定义
+│   ├── vite.config.ts      # Vite 构建配置
+│   ├── tsconfig.json       # TypeScript 配置
 │   └── package.json
 ├── worker/                 # 后端项目
 │   ├── src/
@@ -157,7 +169,12 @@ pnpm deploy
 │   │   │   └── schema.sql  # 数据库 Schema
 │   │   └── services/       # 服务层 (邮件、2FA)
 │   ├── wrangler.toml       # Cloudflare Workers 配置
+│   ├── tsconfig.json       # TypeScript 配置
 │   └── package.json
-├── .github/workflows/      # GitHub Actions 工作流
-└── package.json            # 根 monorepo 配置
+├── README.md               # 项目说明 (中文)
+├── README.en.md            # 项目说明 (英文)
+├── package.json            # 根 monorepo 配置
+├── pnpm-lock.yaml          # pnpm 依赖锁定文件
+├── pnpm-workspace.yaml     # pnpm 工作区配置
+└── tsconfig.base.json      # TypeScript 基础配置
 ```

@@ -115,24 +115,34 @@ The project includes GitHub Actions workflows:
 
 Configure the following Secrets and Variables in your GitHub repository:
 
-| Type | Name | Description |
-|------|------|-------------|
-| Secret | `CLOUDFLARE_API_TOKEN` | Cloudflare API token |
-| Secret | `PAT_TOKEN` | Personal Access Token for creating tags |
-| Secret | `JWT_SECRET` | JWT signing secret |
-| Secret | `SETUP_SECRET` | Database initialization secret |
-| Variable | `CLOUDFLARE_ACCOUNT_ID` | Cloudflare account ID |
-| Variable | `D1_DATABASE_NAME` | D1 database name |
-| Variable | `D1_DATABASE_ID` | D1 database ID |
-| Variable | `KV_NAMESPACE_ID` | KV namespace ID |
-| Variable | `TABLE_PREFIX` | Optional, database table name prefix |
+| Type | Name | Description | Required |
+|------|------|-------------|----------|
+| Secret | `CLOUDFLARE_API_TOKEN` | Cloudflare API token | Yes |
+| Secret | `PAT_TOKEN` | Personal Access Token for creating tags | No¹ |
+| Secret | `JWT_SECRET` | JWT signing secret | Yes |
+| Secret | `SETUP_SECRET` | Database initialization secret | Yes |
+| Variable | `CLOUDFLARE_ACCOUNT_ID` | Cloudflare account ID | Yes |
+| Variable | `D1_DATABASE_NAME` | D1 database name | Yes |
+| Variable | `D1_DATABASE_ID` | D1 database ID | Yes |
+| Variable | `KV_NAMESPACE_ID` | KV namespace ID | Yes |
+| Variable | `TABLE_PREFIX` | Database table name prefix | No² |
+
+¹ `PAT_TOKEN` is only needed if you use the Tag workflow (manually create version tags to trigger Releases). Not required if you don't use this feature.
+² `TABLE_PREFIX` allows multiple projects to share the same D1 database by adding a prefix to all table names, keeping each project's tables isolated (e.g. `app1_users`, `app2_users`). Leave empty for no prefix.
 
 > All configuration is managed in the GitHub repository settings and automatically injected into `wrangler.toml` via sed during deployment — no manual configuration needed in the Cloudflare console.
 
 ## Project Structure
 
 ```
+├── .github/
+│   ├── workflows/          # GitHub Actions workflows
+│   │   ├── deploy.yml      # Auto-deploy to Cloudflare Workers
+│   │   ├── release.yml     # Auto-create GitHub Release
+│   │   └── tag.yml         # Manual version tag trigger
+│   └── renovate.json       # Renovate auto dependency update config
 ├── web/                    # Frontend project
+│   ├── public/             # Static assets (logo.svg, favicon.svg, etc.)
 │   ├── src/
 │   │   ├── components/     # Shared components (ThemeProvider, UI components)
 │   │   ├── hooks/          # Custom hooks (useAuth)
@@ -146,6 +156,8 @@ Configure the following Secrets and Variables in your GitHub repository:
 │   │   │   └── about/      # About page
 │   │   ├── lib/            # Utilities (API, i18n, utils)
 │   │   └── types/          # Type definitions
+│   ├── vite.config.ts      # Vite build config
+│   ├── tsconfig.json       # TypeScript config
 │   └── package.json
 ├── worker/                 # Backend project
 │   ├── src/
@@ -157,7 +169,12 @@ Configure the following Secrets and Variables in your GitHub repository:
 │   │   │   └── schema.sql  # Database schema
 │   │   └── services/       # Services (email, 2FA)
 │   ├── wrangler.toml       # Cloudflare Workers config
+│   ├── tsconfig.json       # TypeScript config
 │   └── package.json
-├── .github/workflows/      # GitHub Actions workflows
-└── package.json            # Root monorepo config
+├── README.md               # Project readme (Chinese)
+├── README.en.md            # Project readme (English)
+├── package.json            # Root monorepo config
+├── pnpm-lock.yaml          # pnpm dependency lock file
+├── pnpm-workspace.yaml     # pnpm workspace config
+└── tsconfig.base.json      # TypeScript base config
 ```
