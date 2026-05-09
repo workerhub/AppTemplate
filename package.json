@@ -2,6 +2,12 @@
   "name": "app-template",
   "version": "1.0.0",
   "private": true,
+  "description": "A full-stack application template built on React 19 + Cloudflare Workers (Hono.js)",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/workerhub/AppTemplate"
+  },
   "type": "module",
   "scripts": {
     "dev": "concurrently \"pnpm dev:worker\" \"pnpm dev:web\"",

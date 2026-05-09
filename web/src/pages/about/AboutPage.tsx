@@ -41,25 +41,29 @@ export function AboutPage() {
       <div className="bg-card border rounded-xl p-5 space-y-3">
         <div className="flex items-center justify-between">
           <span className="text-sm text-muted-foreground">{t('about.sourceCode')}</span>
-          <a
-            href="https://github.com/workerhub/AppTemplate"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-sm font-medium text-primary hover:underline"
-          >
-            GitHub
-          </a>
+          {__APP_REPOSITORY__ && (
+            <a
+              href={__APP_REPOSITORY__}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm font-medium text-primary hover:underline"
+            >
+              GitHub
+            </a>
+          )}
         </div>
         <div className="flex items-center justify-between border-t pt-3">
           <span className="text-sm text-muted-foreground">{t('about.license')}</span>
-          <a
-            href="https://github.com/workerhub/AppTemplate/LICENSE"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-sm font-medium text-primary hover:underline"
-          >
-            MIT
-          </a>
+          {__APP_LICENSE__ && (
+            <a
+              href={`${__APP_REPOSITORY__}/LICENSE`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm font-medium text-primary hover:underline"
+            >
+              {__APP_LICENSE__}
+            </a>
+          )}
         </div>
       </div>
     </div>

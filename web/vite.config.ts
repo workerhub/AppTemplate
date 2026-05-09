@@ -8,6 +8,8 @@ export default defineConfig({
   plugins: [react(), tailwindcss()],
   define: {
     __APP_VERSION__: JSON.stringify(pkg.version),
+    __APP_REPOSITORY__: JSON.stringify(pkg.repository?.url || ''),
+    __APP_LICENSE__: JSON.stringify(pkg.license || ''),
   },
   resolve: {
     alias: {
