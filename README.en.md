@@ -49,6 +49,11 @@ Edit `worker/wrangler.toml`:
 
 ```bash
 # Deploy first, then call setup:
+
+# Option 1: GET (secret in URL, also works directly in the browser)
+curl https://your-worker.workers.dev/api/setup/your-setup-secret
+
+# Option 2: POST (secret in request header)
 curl -X POST https://your-worker.workers.dev/api/setup \
   -H "X-Setup-Secret: your-setup-secret"
 ```

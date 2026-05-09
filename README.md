@@ -49,6 +49,11 @@ pnpm install
 
 ```bash
 # 先部署，然后调用 setup 接口：
+
+# 方式一：GET（secret 在 URL 中，也可直接在浏览器访问）
+curl https://your-worker.workers.dev/api/setup/your-setup-secret
+
+# 方式二：POST（secret 在请求头中）
 curl -X POST https://your-worker.workers.dev/api/setup \
   -H "X-Setup-Secret: your-setup-secret"
 ```
