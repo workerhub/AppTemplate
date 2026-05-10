@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from 'react'
 import { api } from '@/lib/api'
 import type { User } from '@/types'
+import i18n from '@/lib/i18n'
 
 interface LoginResponse {
   success?: boolean
@@ -45,6 +46,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     refreshUser()
   }, [refreshUser])
+
+  // Sync language and theme from user profile (source of truth)
+  useEffect(() => {
+    if (!user) return
+    if (user.language && i18n.language !== user.language) {
+      i18n.changeLanguage(user.language)
+    }
+    if (user.theme) {
+      const stored = localStorage.getItem('theme')
+      if (stored !== user.theme) {
+        localStorage.setItem('theme', user.theme)
+        // Apply theme immediately
+        const root = document.documentElement
+        if (user.theme === 'system') {
+          const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+          root.classList.toggle('dark', isDark)
+        } else {
+          root.classList.toggle('dark', user.theme === 'dark')
+        }
+      }
+    }
+  }, [user])
 
   const login = async (email: string, password: string): Promise<LoginResponse> => {
     const res = await api.post<LoginResponse>('/auth/login', { email, password })

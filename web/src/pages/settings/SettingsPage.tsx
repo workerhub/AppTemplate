@@ -626,6 +626,7 @@ function PreferencesTab() {
   const { theme, setTheme } = useTheme()
 
   const [timezone, setTimezone] = useState(user?.timezone ?? 'UTC')
+  const [language, setLanguage] = useState(user?.language ?? i18n.language)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState(false)
@@ -633,6 +634,7 @@ function PreferencesTab() {
   useEffect(() => {
     if (user) {
       setTimezone(user.timezone ?? 'UTC')
+      setLanguage(user.language ?? i18n.language)
     }
   }, [user])
 
@@ -644,9 +646,13 @@ function PreferencesTab() {
     try {
       await api.put('/me', {
         timezone,
-        language: i18n.language,
+        language,
         theme,
       })
+      // Apply language change only after successful save
+      if (language !== i18n.language) {
+        i18n.changeLanguage(language)
+      }
       await refreshUser()
       setSuccess(true)
       setTimeout(() => setSuccess(false), 3000)
@@ -697,8 +703,8 @@ function PreferencesTab() {
                 type="radio"
                 name="language"
                 value={code}
-                checked={i18n.language === code}
-                onChange={() => i18n.changeLanguage(code)}
+                checked={language === code}
+                onChange={() => setLanguage(code)}
                 className="accent-primary"
               />
               <span className="text-sm text-foreground">{label}</span>
