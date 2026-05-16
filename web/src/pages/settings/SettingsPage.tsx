@@ -775,7 +775,7 @@ export function SettingsPage() {
       <h1 className="text-xl font-bold text-foreground mb-6">{t('settings.title')}</h1>
 
       {/* Tab bar */}
-      <div className="flex gap-1 border-b mb-6 overflow-x-auto">
+      <div className="flex gap-1 border-b mb-6 overflow-x-auto no-scrollbar -mx-4 px-4 md:mx-0 md:px-0">
         {tabs.map((tab) => (
           <button
             key={tab.id}

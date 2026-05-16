@@ -129,7 +129,7 @@ export function AppLayout() {
   ]
 
   return (
-    <div className="min-h-screen flex flex-col md:flex-row">
+    <div className="h-dvh md:min-h-screen flex flex-col md:flex-row">
       {/* Desktop sidebar */}
       <aside className="hidden md:flex md:w-64 md:flex-col bg-card border-r">
         <div className="h-14 flex items-center px-4 border-b">
@@ -155,13 +155,7 @@ export function AppLayout() {
       </aside>
 
       {/* Main content */}
-      <main
-        style={{
-          paddingTop: 'calc(3rem + env(safe-area-inset-top, 0px))',
-          paddingBottom: 'calc(4rem + env(safe-area-inset-bottom, 0px))',
-        }}
-        className="flex-1 md:pt-0 md:pb-0"
-      >
+      <main className="flex-1 pt-[calc(3rem+env(safe-area-inset-top,0px))] pb-[calc(4rem+env(safe-area-inset-bottom,0px))] md:pt-0 md:pb-0">
         {/* Desktop top bar */}
         <div className="hidden md:flex items-center justify-end gap-2 px-6 h-14 border-b bg-card">
           <AvatarDropdown user={user} onLogout={handleLogout} onNavigate={handleMenuNavigate} />

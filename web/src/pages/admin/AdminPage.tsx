@@ -17,7 +17,7 @@ export function AdminPage() {
     <div className="space-y-6">
       <h1 className="text-2xl font-bold">{t('admin.title')}</h1>
 
-      <div className="flex flex-wrap gap-0 border-b">
+      <div className="flex gap-0 border-b overflow-x-auto no-scrollbar -mx-4 px-4 md:mx-0 md:px-0">
         {tabs.map(({ to, label, icon: Icon }) => (
           <NavLink
             key={to}
