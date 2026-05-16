@@ -68,6 +68,7 @@
   },
   "nav": {
     "home": "Home",
+    "me": "Me",
     "settings": "Settings",
     "admin": "Admin",
     "about": "About"

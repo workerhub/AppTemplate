@@ -74,74 +74,6 @@ function AvatarDropdown({ user, onLogout, onNavigate }: {
   )
 }
 
-function MobileAvatarDropdown({ user, onLogout, onNavigate }: {
-  user: { email: string; role: string } | null
-  onLogout: () => void
-  onNavigate: (path: string) => void
-}) {
-  const { t } = useTranslation()
-  const [open, setOpen] = useState(false)
-  const ref = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    const handler = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) {
-        setOpen(false)
-      }
-    }
-    document.addEventListener('mousedown', handler)
-    return () => document.removeEventListener('mousedown', handler)
-  }, [])
-
-  const handleNavigate = (path: string) => {
-    setOpen(false)
-    onNavigate(path)
-  }
-
-  return (
-    <div ref={ref} className="relative">
-      <button
-        onClick={() => setOpen((p) => !p)}
-        className="p-1 rounded-md hover:bg-accent transition-colors"
-      >
-        <div className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center">
-          <User className="w-3.5 h-3.5 text-primary" />
-        </div>
-      </button>
-      {open && (
-        <div className="absolute right-0 top-full mt-1 w-44 bg-card border rounded-lg shadow-lg py-1 z-50">
-          <div className="px-3 py-2 border-b">
-            <p className="text-xs font-medium truncate">{user?.email}</p>
-          </div>
-          <button onClick={() => handleNavigate('/settings')} className="flex items-center gap-2 px-3 py-2 text-sm w-full text-muted-foreground hover:bg-accent transition-colors">
-            <Settings className="w-4 h-4" />
-            {t('nav.settings')}
-          </button>
-          {user?.role === 'admin' && (
-            <button onClick={() => handleNavigate('/admin')} className="flex items-center gap-2 px-3 py-2 text-sm w-full text-muted-foreground hover:bg-accent transition-colors">
-              <Shield className="w-4 h-4" />
-              {t('nav.admin')}
-            </button>
-          )}
-          <button onClick={() => handleNavigate('/about')} className="flex items-center gap-2 px-3 py-2 text-sm w-full text-muted-foreground hover:bg-accent transition-colors">
-            <Info className="w-4 h-4" />
-            {t('nav.about')}
-          </button>
-          <div className="border-t mt-1 pt-1">
-            <button
-              onClick={onLogout}
-              className="flex items-center gap-2 px-3 py-2 text-sm w-full text-destructive hover:bg-accent transition-colors"
-            >
-              <LogOut className="w-4 h-4" />
-              {t('auth.logout')}
-            </button>
-          </div>
-        </div>
-      )}
-    </div>
-  )
-}
-
 export function AppLayout() {
   const { t } = useTranslation()
   const { user, logout, refreshUser } = useAuth()
@@ -187,8 +119,13 @@ export function AppLayout() {
     navigate(path)
   }
 
-  const navItems = [
+  const desktopNavItems = [
     { to: '/', icon: Home, label: t('nav.home') },
+  ]
+
+  const mobileNavItems = [
+    { to: '/', icon: Home, label: t('nav.home') },
+    { to: '/me', icon: User, label: t('nav.me') },
   ]
 
   return (
@@ -199,7 +136,7 @@ export function AppLayout() {
           <h1 className="text-xl font-bold text-primary">{appName}</h1>
         </div>
         <nav className="flex-1 p-2 space-y-1">
-          {navItems.map((item) => (
+          {desktopNavItems.map((item) => (
             <NavLink
               key={item.to}
               to={item.to}
@@ -246,16 +183,13 @@ export function AppLayout() {
 
       {/* Mobile top bar */}
       <header
-        className="md:hidden fixed top-0 left-0 right-0 bg-card border-b flex items-center justify-between px-4 z-50"
+        className="md:hidden fixed top-0 left-0 right-0 bg-card border-b flex items-center px-4 z-50"
         style={{
           height: 'calc(3rem + env(safe-area-inset-top, 0px))',
           paddingTop: 'env(safe-area-inset-top, 0px)',
         }}
       >
         <span className="text-base font-bold text-primary">{appName}</span>
-        <div className="flex items-center gap-1">
-          <MobileAvatarDropdown user={user} onLogout={handleLogout} onNavigate={handleMenuNavigate} />
-        </div>
       </header>
 
       {/* Mobile bottom nav */}
@@ -266,11 +200,11 @@ export function AppLayout() {
           paddingTop: '0.5rem',
         }}
       >
-        {navItems.map((item) => (
+        {mobileNavItems.map((item) => (
           <NavLink
             key={item.to}
             to={item.to}
-            end={item.to === '/'}
+            end
             className={({ isActive }) =>
               `flex flex-col items-center gap-1 px-3 py-1 text-xs ${
                 isActive ? 'text-primary' : 'text-muted-foreground'

@@ -68,6 +68,7 @@
   },
   "nav": {
     "home": "首页",
+    "me": "我的",
     "settings": "设置",
     "admin": "管理",
     "about": "关于"

@@ -8,6 +8,7 @@ import { TwoFactorPage } from '@/pages/auth/TwoFactorPage'
 import { VerifyEmailPage } from '@/pages/auth/VerifyEmailPage'
 import { ForgotPasswordPage } from '@/pages/auth/ForgotPasswordPage'
 import { HomePage } from '@/pages/home/HomePage'
+import { MePage } from '@/pages/me/MePage'
 import { SettingsPage } from '@/pages/settings/SettingsPage'
 import { AdminPage } from '@/pages/admin/AdminPage'
 import { AdminUsersPage } from '@/pages/admin/AdminUsersPage'
@@ -55,6 +56,7 @@ export function App() {
             {/* Protected routes */}
             <Route element={<ProtectedRoute><AppLayout /></ProtectedRoute>}>
               <Route index element={<HomePage />} />
+              <Route path="me" element={<MePage />} />
               <Route path="settings" element={<SettingsPage />} />
               <Route path="about" element={<AboutPage />} />
 
