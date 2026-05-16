@@ -62,7 +62,7 @@ export function App() {
 
               {/* Admin routes */}
               <Route path="admin" element={<AdminRoute><AdminPage /></AdminRoute>}>
-                <Route index element={<Navigate to="users" replace />} />
+                <Route index element={<></>} />
                 <Route path="users" element={<AdminUsersPage />} />
                 <Route path="app" element={<AdminAppPage />} />
                 <Route path="email" element={<AdminEmailPage />} />
